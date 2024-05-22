@@ -10,17 +10,14 @@ class HotelController extends Controller
 
   public function index()
     {
-      $hoteles = Hotel::withCount('habitaciones')->paginate(12);
+      $hoteles = Hotel::withCount('reservas')->paginate(12);
       return response()->json($hoteles);
     }
 
     public function show($id)
     {
-        $hotel = Hotel::findOrFail($id);
-        // Transformar los servicios en un formato adecuado para el frontend
+        $hotel = Hotel::with('habitaciones')->withCount('habitaciones')->findOrFail($id);
         $hotel->servicios = json_decode($hotel->servicios);
-
-
         return response()->json($hotel);
     }
 

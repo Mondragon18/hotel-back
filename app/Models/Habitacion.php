@@ -16,6 +16,7 @@ class Habitacion extends Model
         'tipo',
         'costo_base',
         'impuestos',
+        'descripcion',
         'activo',
     ];
 

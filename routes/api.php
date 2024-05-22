@@ -44,9 +44,12 @@ Route::post('register', [AuthController::class, 'register']); // Registrar un nu
   Route::delete('hoteles/{id}', [HotelController::class, 'destroy']); // Eliminar un nuevo hotel
   
   // Rutas para gestionar habitaciones
+  Route::get('habitaciones', [HabitacionController::class, 'index']); // listado de hoteles
+  Route::get('habitaciones/{id}', [HabitacionController::class, 'show']); // Ver un hotel
   Route::post('habitaciones', [HabitacionController::class, 'store']); // Asignar una habitación disponible a un hotel
   Route::put('habitaciones/{id}', [HabitacionController::class, 'update']); // Modificar los valores de una habitación
   Route::put('habitaciones/{id}/status', [HabitacionController::class, 'toggleStatus']); // Habilitar o deshabilitar una habitación
+  Route::delete('habitaciones/{id}', [HabitacionController::class, 'destroy']); // Eliminar un nuevo hotel
   
   // Rutas para gestionar reservas
   Route::get('reservas', [ReservaController::class, 'index']); // Mostrar las reservas realizadas
