@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contacto_emergencia', function (Blueprint $table) {
-          $table->id();
-
-          $table->unsignedBigInteger('reserva_id');
-          $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
-          $table->string('nombres');
-          $table->string('telefono');
+            $table->id();
+            $table->unsignedBigInteger('reserva_id');
+            $table->string('nombres');
+            $table->string('telefono');
+            
+            $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

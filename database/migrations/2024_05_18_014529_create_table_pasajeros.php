@@ -14,17 +14,14 @@ return new class extends Migration
         Schema::create('pasajeros', function (Blueprint $table) {
           $table->id();
           $table->unsignedBigInteger('user_id');
-          $table->unsignedBigInteger('reserva_id');
           $table->date('fecha_nacimiento');
           $table->string('genero');
           $table->string('tipo_documento');
           $table->string('numero_documento');
-          $table->string('email');
           $table->string('telefono');
           $table->timestamps();
         
           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-          $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
         });
     }
 

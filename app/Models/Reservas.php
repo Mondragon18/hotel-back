@@ -13,11 +13,11 @@ class Reservas extends Model
 
     protected $fillable = [
         'habitacion_id',
+        'pasajero_id',
         'fecha_entrada',
         'fecha_salida',
         'monto_total',
         'estado',
-        'email',
     ];
 
     public function habitacion()
@@ -25,13 +25,14 @@ class Reservas extends Model
         return $this->belongsTo(Habitacion::class);
     }
 
-    public function contactoEmergencia()
+    public function pasajero()
     {
-        return $this->hasMany(ContactoEmergencia::class);
+        return $this->belongsTo(Pasajero::class);
     }
 
-    public function pasajeros()
+    public function contactoEmergencia()
     {
-        return $this->hasMany(Pasajero::class);
+        return $this->hasOne(ContactoEmergencia::class);
     }
+
 }

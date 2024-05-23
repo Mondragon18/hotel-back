@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('reservas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('habitacion_id');
-            $table->foreign('habitacion_id')->references('id')->on('habitacion')->onDelete('cascade');
+            $table->unsignedBigInteger('pasajero_id');
             $table->date('fecha_entrada');
             $table->date('fecha_salida');
             $table->decimal('monto_total', 8, 2);
             $table->string('estado');
+            
+            $table->foreign('habitacion_id')->references('id')->on('habitacion')->onDelete('cascade');
+            $table->foreign('pasajero_id')->references('id')->on('pasajeros')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Hotel;
+use App\Models\Pasajero;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class HotelSeeder extends Seeder
+class PasajerosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-      Hotel::factory()->count(5)->create();
+        Pasajero::factory()->count(5)->create();
     }
 }

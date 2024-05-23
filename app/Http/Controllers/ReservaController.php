@@ -7,9 +7,34 @@ use Illuminate\Http\Request;
 
 class ReservaController extends Controller
 {
-  public function index()
+    public function index(Request $request)
     {
-        $reservas = Reservas::all();
+        $limit = $request->limit ?? 10;
+        $orderBy = $request->has('orderBy') ? $request->input('orderBy') : 'created_at';
+        $sortType = $request->has('ascending') ? ($request->input('ascending') == 1 ? 'asc' : 'desc') : 'asc';
+        $search = $request->input("query");
+
+        $query = Reservas::with(['habitacion', 'pasajero', 'contactoEmergencia']);
+
+        // Lógica de búsqueda
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('habitacion', function($q) use ($search) {
+                $q->where('tipo', 'like', "%{$search}%")
+                    ->orWhere('descripcion', 'like', "%{$search}%");
+            })
+            ->orWhereHas('pasajero', function($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('apellido', 'like', "%{$search}%");
+            })
+            ->orWhereHas('contactoEmergencia', function($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('telefono', 'like', "%{$search}%");
+            });
+        }
+
+        // Paginación
+        $reservas = $query->orderBy($orderBy, $sortType)->paginate($limit);
         return response()->json($reservas);
     }
 
@@ -28,7 +53,6 @@ class ReservaController extends Controller
             'monto_total' => 'required|numeric',
             'estado' => 'required|string|max:255',
             'usuario_email' => 'required|string|email|max:255',
-            // Agrega las validaciones necesarias para los otros campos
         ]);
 
         $reserva = Reservas::create($request->all());

@@ -12,7 +12,6 @@ class Pasajero extends Model
 
     protected $fillable = [
         'user_id',
-        'reserva_id',
         'fecha_nacimiento',
         'genero',
         'tipo_documento',
@@ -27,6 +26,6 @@ class Pasajero extends Model
 
     public function reserva()
     {
-        return $this->belongsTo(Reservas::class, 'reserva_id');
+        return $this->hasMany(Reservas::class);
     }
 }
