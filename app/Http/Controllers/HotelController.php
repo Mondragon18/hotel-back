@@ -10,7 +10,7 @@ class HotelController extends Controller
 
   public function index()
     {
-      $hoteles = Hotel::withCount('reservas')->paginate(12);
+      $hoteles = Hotel::withCount('habitaciones')->paginate(12);
       return response()->json($hoteles);
     }
 
@@ -40,8 +40,8 @@ class HotelController extends Controller
         //     $imageUrls[] = asset('storage/' . $imagePath); // URL completa de la imagen
         // }
         // Guarda la imagen en el sistema de archivos de Laravel
-                
-      
+
+
         // Crear el hotel con la URL de la imagen
         $hotel = Hotel::create([
           'nombre' => $request->nombre,
@@ -58,7 +58,7 @@ class HotelController extends Controller
           // 'imagenes' => $imageUrls,
           'activo' => true, // URL completa de la imagen
         ]);
-      
+
         return response()->json($hotel, 201);
             // Verificar si se proporcionaron imágenes
         // if ($request->hasFile('imagenes')) {
@@ -93,5 +93,13 @@ class HotelController extends Controller
         $hotel = Hotel::findOrFail($id);
         $hotel->delete();
         return response()->json(null, 204);
+    }
+
+    // Método para habilitar o deshabilitar un hotel
+    public function toggleStatus($id, $status)
+    {
+        $hotel = Hotel::findOrFail($id);
+        $hotel->update(['activo' => $status]);
+        return $hotel;
     }
 }
