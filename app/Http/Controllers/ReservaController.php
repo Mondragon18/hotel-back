@@ -11,7 +11,7 @@ class ReservaController extends Controller
     {
         $limit = $request->limit ?? 10;
         $orderBy = $request->has('orderBy') ? $request->input('orderBy') : 'created_at';
-        $sortType = $request->has('ascending') ? ($request->input('ascending') == 1 ? 'asc' : 'desc') : 'asc';  
+        $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';  
 
         $query = Reservas::with(['habitacion.hotel', 'pasajero.user', 'contactoEmergencia']);
 
