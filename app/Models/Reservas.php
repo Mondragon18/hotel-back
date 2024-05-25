@@ -32,7 +32,7 @@ class Reservas extends Model
 
     public function contactoEmergencia()
     {
-        return $this->hasOne(ContactoEmergencia::class);
+        return $this->hasOne(ContactoEmergencia::class, 'reserva_id');
     }
 
 }

@@ -11,36 +11,61 @@ class ReservaController extends Controller
     {
         $limit = $request->limit ?? 10;
         $orderBy = $request->has('orderBy') ? $request->input('orderBy') : 'created_at';
-        $sortType = $request->has('ascending') ? ($request->input('ascending') == 1 ? 'asc' : 'desc') : 'asc';
-        $search = $request->input("query");
+        $sortType = $request->has('ascending') ? ($request->input('ascending') == 1 ? 'asc' : 'desc') : 'asc';  
 
-        $query = Reservas::with(['habitacion', 'pasajero', 'contactoEmergencia']);
+        $query = Reservas::with(['habitacion.hotel', 'pasajero.user', 'contactoEmergencia']);
+
+        if ($request->has('fecha_entrada')) {
+          $fechaEntrada = $request->input('fecha_entrada');
+          $query->whereDate('fecha_entrada', $fechaEntrada);
+        }
+    
+        if ($request->has('fecha_salida')) {
+          $fechaSalida = $request->input('fecha_salida');
+          $query->whereDate('fecha_salida', $fechaSalida);
+        }
+    
+        if ($request->has('estado')) {
+          $estado = $request->input('estado');
+          $query->where('estado', $estado);
+        }
 
         // Lógica de búsqueda
-        if ($request->has('search')) {
-            $search = $request->input('search');
+        if ($request->has('query')) {
+            $search = $request->input('query');
             $query->whereHas('habitacion', function($q) use ($search) {
                 $q->where('tipo', 'like', "%{$search}%")
                     ->orWhere('descripcion', 'like', "%{$search}%");
             })
-            ->orWhereHas('pasajero', function($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('apellido', 'like', "%{$search}%");
+            ->orWhereHas('habitacion.hotel', function($q) use ($search) {
+              $q->where('nombre', 'like', "%{$search}%");
+            })
+            ->orWhereHas('pasajero.user', function($q) use ($search) {
+                $q->where('nombres', 'like', "%{$search}%")
+                  ->orWhere('apellidos', 'like', "%{$search}%");
             })
             ->orWhereHas('contactoEmergencia', function($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
+                $q->where('nombres', 'like', "%{$search}%")
                     ->orWhere('telefono', 'like', "%{$search}%");
             });
         }
 
+        if($orderBy === 'habitacion.tipo'){
+          $query->orderByRaw("(SELECT tipo FROM habitacion WHERE id = reservas.habitacion_id) $sortType");
+        } else if ($orderBy === 'pasajero.user.nombres'){
+          $query->orderByRaw("(SELECT nombres FROM users WHERE id = (SELECT user_id FROM pasajeros WHERE id = reservas.pasajero_id)) $sortType");
+        } else {
+            $query->orderBy($orderBy, $sortType);
+        }
+
         // Paginación
-        $reservas = $query->orderBy($orderBy, $sortType)->paginate($limit);
+        $reservas = $query->paginate($limit);
         return response()->json($reservas);
     }
 
     public function show($id)
     {
-        $reserva = Reservas::findOrFail($id);
+        $reserva = Reservas::with(['habitacion.hotel', 'pasajero.user', 'contactoEmergencia'])->findOrFail($id);
         return response()->json($reserva);
     }
 
