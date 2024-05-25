@@ -10,7 +10,7 @@ class HabitacionController extends Controller
 
   public function index()
   {
-    $habitaciones = Habitacion::withCount('habitaciones')->paginate(12);
+    $habitaciones = Habitacion::paginate(12);
       return response()->json($habitaciones);
   }
 
