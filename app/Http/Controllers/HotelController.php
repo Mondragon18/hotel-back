@@ -8,9 +8,35 @@ use Illuminate\Http\Request;
 class HotelController extends Controller
 {
 
-  public function index()
+  public function index(Request $request)
     {
-      $hoteles = Hotel::withCount('habitaciones')->paginate(12);
+
+      $limit = $request->limit ?? 12;
+      $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';  
+      
+      $query = Hotel::withCount('habitaciones');
+      // Filtro por nombre de hotel, ciudad, descripción, servicio
+      if ($request->has('query')) {
+        $search = $request->input('query');
+        $query->where('nombre', 'like', "%{$search}%")
+              ->orWhere('ciudad', 'like', "%{$search}%")
+              ->orWhere('descripcion', 'like', "%{$search}%");
+              // ->orWhere('servicio', 'like', "%{$search}%");
+      }
+
+       // Filtro por estado
+      if ($request->has('estado')) {
+        $estado = $request->input('estado');
+        $query->where('activo', $estado);
+      }
+
+      if ($request->has('clasificacion')) {
+        $clasificacion = $request->input('clasificacion');
+        $query->where('clasificacion', $clasificacion);
+      }
+
+
+      $hoteles = $query->orderBy('created_at', 'asc')->paginate($limit);
       return response()->json($hoteles);
     }
 
