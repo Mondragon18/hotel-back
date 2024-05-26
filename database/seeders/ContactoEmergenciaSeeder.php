@@ -14,7 +14,7 @@ class ContactoEmergenciaSeeder extends Seeder
      */
     public function run(): void
     {
-        ContactoEmergencia::factory()->count(3)->create();
+        ContactoEmergencia::factory()->count(20)->create();
         
     }
 }

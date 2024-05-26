@@ -27,6 +27,11 @@ class Hotel extends Model
         'activo',
     ];
 
+    protected $hidden = [
+      'updated_at',
+      'deleted_at',
+    ];
+
     public function habitaciones()
     {
         return $this->hasMany(Habitacion::class);
