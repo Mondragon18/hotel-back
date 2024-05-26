@@ -66,6 +66,8 @@ class ReservaController extends Controller
     public function show($id)
     {
         $reserva = Reservas::with(['habitacion.hotel', 'pasajero.user', 'contactoEmergencia'])->findOrFail($id);
+
+        $reserva->habitacion->hotel->servicios = json_decode($reserva->habitacion->hotel->servicios);
         return response()->json($reserva);
     }
 

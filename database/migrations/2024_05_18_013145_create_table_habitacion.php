@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('hotel_id');
             $table->foreign('hotel_id')->references('id')->on('hoteles')->onDelete('cascade');
             $table->string('tipo');
+            $table->integer('numero_persona');
             $table->string('descripcion');
             $table->decimal('costo_base', 8, 2);
             $table->decimal('impuestos', 8, 2);

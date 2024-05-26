@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('fecha_entrada');
             $table->date('fecha_salida');
             $table->decimal('monto_total', 8, 2);
-            $table->enum('estado', ['Cancelada', 'Pendiente', 'Confirmada']);
+            $table->enum('estado', ['cancelada', 'pendiente', 'confirmada']);
             
             $table->foreign('habitacion_id')->references('id')->on('habitacion')->onDelete('cascade');
             $table->foreign('pasajero_id')->references('id')->on('pasajeros')->onDelete('cascade');

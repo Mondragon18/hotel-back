@@ -14,6 +14,7 @@ class Habitacion extends Model
     protected $fillable = [
         'hotel_id',
         'tipo',
+        'numero_persona',
         'costo_base',
         'impuestos',
         'descripcion',
@@ -28,5 +29,12 @@ class Habitacion extends Model
     public function reservas()
     {
         return $this->hasMany(Reservas::class);
+    }
+
+    protected $appends = ['total'];
+
+    public function getTotalAttribute()
+    { 
+        return ($this->costo_base + $this->impuestos);
     }
 }
