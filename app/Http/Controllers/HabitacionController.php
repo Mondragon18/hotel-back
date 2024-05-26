@@ -8,12 +8,28 @@ use Illuminate\Http\Request;
 class HabitacionController extends Controller
 {
 
-  public function index()
-  {
-    $habitaciones = Habitacion::paginate(12);
-      return response()->json($habitaciones);
-  }
+    public function index()
+    {
+        $sortType = request()->has('ascending') && request()->input('ascending') == 1 ? 'asc' : 'desc';
+        $search = request('search');
+        $limite = Request('limite') ?? 10;
 
+        $query = Habitacion::query();
+        if (!empty($search)) {
+            $query->where(function ($queryBuilder) use ($search) {
+                $queryBuilder->where('tipo', 'like', "%{$search}%");
+                    // ->orWhere('slug', 'like', "%{$search}%")
+                    // ->orWhere('titulo', 'like', "%{$search}%");
+            });
+        }
+
+        if (request()->has("orderBy")) {
+            $query->orderBy(request('orderBy'), $sortType);
+        }
+
+        $data = $query->paginate($limite, ['*'], Request('page') ?? 1); // Cambié el valor predeterminado a 12 para la paginación
+        return response()->json($data);
+    }
     public function show($id)
     {
         $habitacion = Habitacion::findOrFail($id);

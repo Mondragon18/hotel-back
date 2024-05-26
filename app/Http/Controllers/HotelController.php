@@ -8,10 +8,47 @@ use Illuminate\Http\Request;
 class HotelController extends Controller
 {
 
-  public function index()
+    public function index()
     {
-      $hoteles = Hotel::withCount('habitaciones')->paginate(12);
-      return response()->json($hoteles);
+        // Obtener los parámetros de la solicitud
+        $sortType = request()->has('ascending') && request()->input('ascending') == 1 ? 'asc' : 'desc';
+        $search = request('search');
+        $fechaEntrada = request('fecha_entrada');
+        $fechaSalida = request('fecha_salida');
+        $ciudad = request('ciudad');
+        $huespedes = request('huespedes');
+
+        // Inicializar la consulta
+        $query = Hotel::with('habitaciones.reservas');
+
+        // Aplicar filtro de búsqueda si está presente
+        if (!empty($search)) {
+            $query->where('nombre', 'like', "%{$search}%");
+        }
+
+        // Aplicar filtro de ciudad si está presente
+        if (!empty($ciudad)) {
+            $query->where('ciudad', 'like', "%{$ciudad}%");
+        }
+
+        // Aplicar filtros de fechas si están presentes
+        if (!empty($fechaEntrada) && !empty($fechaSalida)) {
+            $query->whereHas('habitaciones.reservas', function ($subQuery) use ($fechaEntrada, $fechaSalida) {
+                $subQuery->where('fecha_entrada', '>=', '2024-02-10')
+                         ->where('fecha_salida', '<=', '2024-05-31');
+            });
+        }
+
+        // Aplicar filtro de cantidad de huéspedes si está presente
+        if (!empty($huespedes)) {
+            $query->whereHas('habitaciones', function ($subQuery) use ($huespedes) {
+                $subQuery->where('huespedes', '>=', $huespedes);
+            });
+        }
+
+        $datos = $query->paginate(Request('limite') ?? 10);
+        return response()->json($datos);
+        // return response()->json([$query->toSql(), $query->getBindings()]);
     }
 
     public function show($id)

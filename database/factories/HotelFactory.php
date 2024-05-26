@@ -18,20 +18,22 @@ class HotelFactory extends Factory
      */
     public function definition(): array
     {
-      return [
-          'nombre' => $this->faker->company,
-          'direccion' => $this->faker->address,
-          'ciudad' => $this->faker->city,
-          'pais' => $this->faker->country,
-          'telefono' => $this->faker->phoneNumber,
-          'email' => $this->faker->unique()->safeEmail,
-          'clasificacion' => $this->faker->numberBetween(1, 5),
-          // 'servicios' => $this->faker->words(3, true),
-          'descripcion' => $this->faker->paragraph,
-          'fecha_apertura' => $this->faker->date,
-          // 'imagenes' => $this->faker->imageUrl,
-          'pagina_web' => $this->faker->url,
-          'activo' => $this->faker->boolean,
-      ];
+        $ciudades = ['Bogotá','Medellín','Cali'];
+        return [
+            'nombre' => $this->faker->company,
+            'direccion' => $this->faker->address,
+            //   'ciudad' => $this->faker->city,
+            'ciudad' => $this->faker->randomElement($ciudades),
+            'pais' => $this->faker->country,
+            'telefono' => $this->faker->phoneNumber,
+            'email' => $this->faker->unique()->safeEmail,
+            'clasificacion' => $this->faker->numberBetween(1, 5),
+            // 'servicios' => $this->faker->words(3, true),
+            'descripcion' => $this->faker->paragraph,
+            'fecha_apertura' => $this->faker->date,
+            // 'imagenes' => $this->faker->imageUrl,
+            'pagina_web' => $this->faker->url,
+            'activo' => $this->faker->boolean,
+        ];
     }
 }
