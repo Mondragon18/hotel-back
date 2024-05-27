@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactoEmergenciaController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\ReservaController;
@@ -56,5 +57,12 @@ Route::group(['middleware' => 'auth:api'], function () {
   Route::get('reservas', [ReservaController::class, 'index']); // Mostrar las reservas realizadas
   Route::get('reservas/{id}', [ReservaController::class, 'show']); // Mostrar el detalle de una reserva específica
   Route::post('reservas', [ReservaController::class, 'store']); // Realizar una nueva reserva
+
+  // Rutas para contactos emergencias
+  Route::post('conatcto_emergencia', [ContactoEmergenciaController::class, 'store']); // Realizar una nueva reserva
+
+//   Route::resource('conatcto_emergencia', ContactoEmergenciaController::class)->except('show');
+
+
 
 });
