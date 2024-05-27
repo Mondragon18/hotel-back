@@ -78,8 +78,7 @@ class ReservaController extends Controller
             'fecha_entrada' => 'required|date',
             'fecha_salida' => 'required|date',
             'monto_total' => 'required|numeric',
-            'estado' => 'required|string|max:255',
-            'usuario_email' => 'required|string|email|max:255',
+            'estado' => 'required|string|max:255'
         ]);
 
         $reserva = Reservas::create($request->all());

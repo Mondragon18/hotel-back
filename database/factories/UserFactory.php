@@ -11,37 +11,50 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+  /**
+   * The current password being used by the factory.
+   */
+  protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            'usuario' => $this->faker->userName,
-            'nombres' => $this->faker->firstName,
-            'apellidos' => $this->faker->lastName,
-            'email' => $this->faker->unique()->safeEmail,
-            // 'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'), // Cambia 'password' por la contraseña que desees usar         
-            // 'remember_token' => Str::random(10),     
-            'persona' => $this->faker->randomElement(['pasajero', 'agente']),
-        ];
-    }
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition(): array
+  {
+    $adminData = [
+      'usuario' => 'admin',
+      'nombres' => 'Admin',
+      'apellidos' => 'Admin',
+      'email' => 'admin@example.com',
+      'password' => Hash::make('admin'),
+      'persona' => 'agente', // Otra opción es usar un rol específico como 'admin'
+    ];
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    // public function unverified(): static
-    // {
-    //     return $this->state(fn (array $attributes) => [
-    //         'email_verified_at' => null,
-    //     ]);
-    // }
+    // Define los datos de agente
+    $agentData = [
+      'usuario' => $this->faker->userName,
+      'nombres' => $this->faker->firstName,
+      'apellidos' => $this->faker->lastName,
+      'email' => $this->faker->unique()->safeEmail,
+      'password' => static::$password ??= Hash::make('admin'), // Otra contraseña si es necesario
+      'persona' => 'pasajero',
+    ];
+
+    // Selecciona aleatoriamente entre los datos de administrador y agente
+    $userData = $this->faker->randomElement([$adminData, $agentData]);
+
+    return $userData;
+  }
+
+  /**
+   * Indicate that the model's email address should be unverified.
+   */
+  // public function unverified(): static
+  // {
+  //     return $this->state(fn (array $attributes) => [
+  //         'email_verified_at' => null,
+  //     ]);
+  // }
 }
