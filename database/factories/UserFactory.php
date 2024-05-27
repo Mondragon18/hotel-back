@@ -23,15 +23,6 @@ class UserFactory extends Factory
    */
   public function definition(): array
   {
-    $adminData = [
-      'usuario' => 'admin',
-      'nombres' => 'Admin',
-      'apellidos' => 'Admin',
-      'email' => 'admin@example.com',
-      'password' => Hash::make('admin'),
-      'persona' => 'agente', // Otra opción es usar un rol específico como 'admin'
-    ];
-
     // Define los datos de agente
     $agentData = [
       'usuario' => $this->faker->userName,
@@ -43,7 +34,7 @@ class UserFactory extends Factory
     ];
 
     // Selecciona aleatoriamente entre los datos de administrador y agente
-    $userData = $this->faker->randomElement([$adminData, $agentData]);
+    $userData = $this->faker->randomElement([$agentData]);
 
     return $userData;
   }
