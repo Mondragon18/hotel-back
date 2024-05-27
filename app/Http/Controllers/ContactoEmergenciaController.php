@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReservaHotelMail;
 use App\Models\ContactoEmergencia;
+use App\Models\Reservas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ContactoEmergenciaController extends Controller
 {
@@ -29,7 +32,12 @@ class ContactoEmergenciaController extends Controller
       ]);
 
       $contacto = ContactoEmergencia::create($request->all());
-      return response()->json($contacto, 201);
+
+      $reserva = Reservas::with('habitacion.hotel', 'pasajero.user', 'contactoEmergencia')->find($contacto->reserva_id);
+
+      Mail::to($reserva->pasajero->user->email)->send(new ReservaHotelMail($reserva));
+
+      return response()->json([$contacto, $reserva->pasajero->user->email] , 201);
   }
 
   public function update(Request $request, $id)
