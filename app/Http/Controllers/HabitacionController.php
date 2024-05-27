@@ -36,7 +36,7 @@ class HabitacionController extends Controller
         return response()->json($habitacion);
     }
 
-    public function showIdHotel(Request $request, $hotel_id)
+    public function showIdHotel($hotel_id, Request $request)
     {
         $limit = $request->limit ?? 12;
         $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';
@@ -45,10 +45,10 @@ class HabitacionController extends Controller
 
         // Filtro por nombre de hotel, ciudad, descripción, servicio
         if ($request->has('query')) {
-        $search = $request->input('query');
-        $query->where('tipo', 'like', "%{$search}%")
-            ->orWhere('numero_persona', 'like', "%{$search}%")
-            ->orWhere('descripcion', 'like', "%{$search}%");
+            $search = $request->input('query');
+            $query->where('tipo', 'like', "%{$search}%");
+                // ->orWhere('numero_persona', 'like', "%{$search}%");
+                // ->orWhere('descripcion', 'like', "%{$search}%");
         }
 
         if ($request->has('estado')) {
