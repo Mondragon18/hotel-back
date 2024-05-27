@@ -3,16 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Persona;
-use App\Models\Usuario;
-use App\Models\Pasajero;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends Controller
 {
@@ -69,13 +64,16 @@ class AuthController extends Controller
 
   public function logout(Request $request)
   {
-    $this->validate($request, ['token' => 'required']);
+    $token = JWTAuth::parseToken()->getToken();
 
     try {
-      JWTAuth::invalidate($request->token);
-      return response()->json(['success' => 'User logged out successfully']);
+      // Invalida el token
+      JWTAuth::invalidate($token);
+
+      // Devuelve el token de acceso como respuesta JSON
+      return response()->json(['success' => 'El usuario cerró la sesión correctamente.']);
     } catch (JWTException $e) {
-      return response()->json(['error' => 'Failed to logout, please try again.'], 500);
+      return response()->json(['error' => 'No pudo cerrar la sesión, inténtelo de nuevo.'], 500);
     }
   }
 

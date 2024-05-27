@@ -27,10 +27,10 @@ Route::post('login', [AuthController::class, 'login']); // Iniciar sesión
 Route::post('register', [AuthController::class, 'register']); // Registrar un nuevo usuario
 
 
-// Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
   Route::get('user', [AuthController::class, 'getAuthenticatedUser']);
 
-  Route::post('logout', [AuthController::class, 'logout']);
+  Route::delete('logout', [AuthController::class, 'logout']);
 
   // Rutas para gestionar hoteles
   Route::get('servicios', [ServiciosController::class, 'index']); // listado un nuevo hotel
@@ -57,4 +57,4 @@ Route::post('register', [AuthController::class, 'register']); // Registrar un nu
   Route::get('reservas/{id}', [ReservaController::class, 'show']); // Mostrar el detalle de una reserva específica
   Route::post('reservas', [ReservaController::class, 'store']); // Realizar una nueva reserva
 
-// });
+});
