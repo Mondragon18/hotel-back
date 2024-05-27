@@ -15,4 +15,6 @@ class PasajerosSeeder extends Seeder
     {
         Pasajero::factory()->count(5)->create();
     }
+
+    
 }

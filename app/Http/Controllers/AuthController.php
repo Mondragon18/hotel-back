@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pasajero;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -59,10 +60,13 @@ class AuthController extends Controller
       // Obtener el usuario autenticado
       $user = auth()->user();
 
+      $persona = Pasajero::find($user->id);
+
       // Devolver la información del usuario junto con el token
       return response()->json([
         'token' => $token,
-        'user' => $user
+        'user' => $user,
+        'persona' => $persona
       ]);
     } catch (JWTException $e) {
       return response()->json(['error' => ['No se pudo crear el token']], 500);

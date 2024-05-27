@@ -24,7 +24,9 @@ class PasajeroController extends Controller
   {
       $request->validate([
           'user_id' => 'required|exists:users,id',
-          'reserva_id' => 'required|exists:reservas,id',
+          'tipo_documento' => 'required',
+          'numero_documento' => 'required',
+          'telefono' => 'required',
       ]);
 
       $pasajero = Pasajero::create($request->all());
