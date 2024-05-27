@@ -7,42 +7,58 @@ use Illuminate\Http\Request;
 
 class HabitacionController extends Controller
 {
+    public function index()
+    {
+        $sortType = request()->has('ascending') && request()->input('ascending') == 1 ? 'asc' : 'desc';
+        $search = request('search');
+        $limite = Request('limite') ?? 10;
 
-  public function index()
-  {
-    $habitaciones = Habitacion::paginate(12);
-    return response()->json($habitaciones);
-  }
+        $query = Habitacion::query();
+        if (!empty($search)) {
+            $query->where(function ($queryBuilder) use ($search) {
+                $queryBuilder->where('tipo', 'like', "%{$search}%");
+                    // ->orWhere('slug', 'like', "%{$search}%")
+                    // ->orWhere('titulo', 'like', "%{$search}%");
+            });
+        }
 
-  public function showIdHotel(Request $request, $hotel_id)
-  {
-    $limit = $request->limit ?? 12;
-    $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';  
+        if (request()->has("orderBy")) {
+            $query->orderBy(request('orderBy'), $sortType);
+        }
 
-    $query = Habitacion::where('hotel_id', $hotel_id);
-
-    // Filtro por nombre de hotel, ciudad, descripción, servicio
-    if ($request->has('query')) {
-      $search = $request->input('query');
-      $query->where('tipo', 'like', "%{$search}%")
-        ->orWhere('numero_persona', 'like', "%{$search}%")
-        ->orWhere('descripcion', 'like', "%{$search}%");
+        $data = $query->paginate($limite, ['*'], Request('page') ?? 1); // Cambié el valor predeterminado a 12 para la paginación
+        return response()->json($data);
     }
 
-    if ($request->has('estado')) {
-      $estado = $request->input('estado');
-      $query->where('activo', $estado);
+    public function show($id)
+    {
+        $habitacion = Habitacion::findOrFail($id);
+        return response()->json($habitacion);
     }
 
-    $habitacion = $query->orderBy('created_at', 'asc')->paginate($limit);
-    return response()->json($habitacion);
-  }
+    public function showIdHotel(Request $request, $hotel_id)
+    {
+        $limit = $request->limit ?? 12;
+        $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';
 
-  public function show($id)
-  {
-    $habitacion = Habitacion::findOrFail($id);
-    return response()->json($habitacion);
-  }
+        $query = Habitacion::where('hotel_id', $hotel_id);
+
+        // Filtro por nombre de hotel, ciudad, descripción, servicio
+        if ($request->has('query')) {
+        $search = $request->input('query');
+        $query->where('tipo', 'like', "%{$search}%")
+            ->orWhere('numero_persona', 'like', "%{$search}%")
+            ->orWhere('descripcion', 'like', "%{$search}%");
+        }
+
+        if ($request->has('estado')) {
+        $estado = $request->input('estado');
+        $query->where('activo', $estado);
+        }
+
+        $habitacion = $query->orderBy('created_at', 'asc')->paginate($limit);
+        return response()->json($habitacion);
+    }
 
   public function store(Request $request)
   {

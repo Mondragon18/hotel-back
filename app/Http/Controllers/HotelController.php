@@ -8,44 +8,69 @@ use Illuminate\Http\Request;
 class HotelController extends Controller
 {
 
-  public function index(Request $request)
-  {
+    public function index()
+    {
+        // Obtener los parámetros de la solicitud
+        $sortType = request()->has('ascending') && request()->input('ascending') == 1 ? 'asc' : 'desc';
+        $search = request('query');
+        $fechaEntrada = request('fecha_entrada');
+        $fechaSalida = request('fecha_salida');
+        $ciudad = request('ciudad');
+        $huespedes = request('huespedes');
 
-    $limit = $request->limit ?? 12;
-    $sortType = $request->has('ascending') ? $request->input('ascending') : 'asc';
+        // Inicializar la consulta
+        $query = Hotel::with('habitaciones.reservas');
 
-    $query = Hotel::withCount('habitaciones');
-    // Filtro por nombre de hotel, ciudad, descripción, servicio
-    if ($request->has('query')) {
-      $search = $request->input('query');
-      $query->where('nombre', 'like', "%{$search}%")
-        ->orWhere('ciudad', 'like', "%{$search}%")
-        ->orWhere('descripcion', 'like', "%{$search}%");
-      // ->orWhere('servicio', 'like', "%{$search}%");
+        // Aplicar filtro de búsqueda si está presente
+        if (!empty($search)) {
+            $query->where('nombre', 'like', "%{$search}%");
+        }
+
+        // Aplicar filtro de ciudad si está presente
+        if (!empty($ciudad)) {
+            $query->where('ciudad', 'like', "%{$ciudad}%");
+        }
+
+        // Aplicar filtros de fechas si están presentes
+        if (!empty($huespedes) && $huespedes != 'null') {
+            $query->whereHas('habitaciones', function ($subQuery) use ($huespedes) {
+                $subQuery->where('numero_persona', $huespedes);
+            });
+        }
+
+        // Filtro por estado
+        if (Request()->has('activo')) {
+            $activo = Request()->input('activo');
+            $query->where('activo', $activo);
+        }
+
+        if (Request()->has('clasificacion')) {
+            $clasificacion = Request()->input('clasificacion');
+            $query->where('clasificacion', $clasificacion);
+        }
+
+        // Aplicar filtros de fechas si están presentes
+        if (!empty($fechaEntrada) && !empty($fechaSalida)) {
+            $query->whereHas('habitaciones.reservas', function ($subQuery) use ($fechaEntrada, $fechaSalida) {
+                if(!empty($fechaEntrada)) {
+                    $subQuery->where('fecha_entrada', '>=', $fechaEntrada);
+                }
+                if (!empty($fechaSalida)) {
+                    $subQuery->where('fecha_salida', '<=',  $fechaSalida);
+                }
+            });
+        }
+
+        $datos = $query->paginate(Request('limite') ?? 10);
+        return response()->json($datos);
+        // return response()->json([$query->toSql(), $query->getBindings()]);
     }
-
-    // Filtro por estado
-    if ($request->has('activo')) {
-      $activo = $request->input('activo');
-      $query->where('activo', $activo);
+    public function show($id)
+    {
+        $hotel = Hotel::with('habitaciones')->withCount('habitaciones')->findOrFail($id);
+        $hotel->servicios = json_decode($hotel->servicios);
+        return response()->json($hotel);
     }
-
-    if ($request->has('clasificacion')) {
-      $clasificacion = $request->input('clasificacion');
-      $query->where('clasificacion', $clasificacion);
-    }
-
-
-    $hoteles = $query->orderBy('created_at', 'asc')->paginate($limit);
-    return response()->json($hoteles);
-  }
-
-  public function show($id)
-  {
-    $hotel = Hotel::with('habitaciones')->withCount('habitaciones')->findOrFail($id);
-    $hotel->servicios = json_decode($hotel->servicios);
-    return response()->json($hotel);
-  }
 
   public function store(Request $request)
   {
