@@ -11,32 +11,19 @@ class HotelController extends Controller
     public function index()
     {
         // Obtener los parámetros de la solicitud
-        $sortType = Request()->has('ascending') && Request('ascending') == 1 ? 'asc' : 'desc';
+        $sortType = request()->has('ascending') && request()->input('ascending') == 1 ? 'asc' : 'desc';
+        $search = request('query');
         $fechaEntrada = request('fecha_entrada');
         $fechaSalida = request('fecha_salida');
         $ciudad = request('ciudad');
         $huespedes = request('huespedes');
 
         // Inicializar la consulta
-        $query = Hotel::withCount('habitaciones');
+        $query = Hotel::with('habitaciones.reservas');
 
-        if (Request()->has('query')) {
-            $search = Request('query');
-            $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('ciudad', 'like', "%{$search}%")
-                ->orWhere('descripcion', 'like', "%{$search}%");
-            // ->orWhere('servicio', 'like', "%{$search}%");
-        }
-
-        // Filtro por estado
-        if (Request()->has('activo')) {
-            $activo = Request('activo');
-            $query->where('activo', $activo);
-        }
-
-        if (Request()->has('clasificacion')) {
-            $clasificacion = Request('clasificacion');
-            $query->where('clasificacion', $clasificacion);
+        // Aplicar filtro de búsqueda si está presente
+        if (!empty($search)) {
+            $query->where('nombre', 'like', "%{$search}%");
         }
 
         // Aplicar filtro de ciudad si está presente
@@ -45,31 +32,45 @@ class HotelController extends Controller
         }
 
         // Aplicar filtros de fechas si están presentes
+        if (!empty($huespedes) && $huespedes != 'null') {
+            $query->whereHas('habitaciones', function ($subQuery) use ($huespedes) {
+                $subQuery->where('numero_persona', $huespedes);
+            });
+        }
+
+        // Filtro por estado
+        if (Request()->has('activo')) {
+            $activo = Request()->input('activo');
+            $query->where('activo', $activo);
+        }
+
+        if (Request()->has('clasificacion')) {
+            $clasificacion = Request()->input('clasificacion');
+            $query->where('clasificacion', $clasificacion);
+        }
+
+        // Aplicar filtros de fechas si están presentes
         if (!empty($fechaEntrada) && !empty($fechaSalida)) {
             $query->whereHas('habitaciones.reservas', function ($subQuery) use ($fechaEntrada, $fechaSalida) {
-                $subQuery->where('fecha_entrada', '>=', '2024-02-10')
-                         ->where('fecha_salida', '<=', '2024-05-31');
+                if(!empty($fechaEntrada)) {
+                    $subQuery->where('fecha_entrada', '>=', $fechaEntrada);
+                }
+                if (!empty($fechaSalida)) {
+                    $subQuery->where('fecha_salida', '<=',  $fechaSalida);
+                }
             });
         }
 
-        // Aplicar filtro de cantidad de huéspedes si está presente
-        if (!empty($huespedes)) {
-            $query->whereHas('habitaciones', function ($subQuery) use ($huespedes) {
-                $subQuery->where('huespedes', '>=', $huespedes);
-            });
-        }
-
-        $datos = $query->orderBy('created_at', 'asc')->paginate(Request('limite') ?? 10);
+        $datos = $query->paginate(Request('limite') ?? 10);
         return response()->json($datos);
         // return response()->json([$query->toSql(), $query->getBindings()]);
     }
-
-  public function show($id)
-  {
-    $hotel = Hotel::with('habitaciones')->withCount('habitaciones')->findOrFail($id);
-    $hotel->servicios = json_decode($hotel->servicios);
-    return response()->json($hotel);
-  }
+    public function show($id)
+    {
+        $hotel = Hotel::with('habitaciones')->withCount('habitaciones')->findOrFail($id);
+        $hotel->servicios = json_decode($hotel->servicios);
+        return response()->json($hotel);
+    }
 
   public function store(Request $request)
   {
