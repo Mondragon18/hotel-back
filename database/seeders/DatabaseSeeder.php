@@ -14,25 +14,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Deshabilitar verificación de claves foráneas
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         // Limpiar las tablas
-        DB::table('servicios')->truncate();
-        DB::table('hoteles')->truncate();
-        DB::table('habitacion')->truncate();
-        DB::table('users')->truncate();
+        // DB::table('servicios')->truncate();
+        // DB::table('hoteles')->truncate();
+        // DB::table('habitacion')->truncate();
+        // DB::table('users')->truncate();
         // DB::table('pasajeros')->truncate();
         // DB::table('reservas')->truncate();
         // DB::table('contacto_emergencia')->truncate();
 
         // Habilitar verificación de claves foráneas
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Ejecutar los seeders
-        $this->call(ServiciosSeeder::class);
-        $this->call(HotelSeeder::class);
-        $this->call(HabitacionSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(ServiciosSeeder::class);
+        // $this->call(HotelSeeder::class);
+        // $this->call(HabitacionSeeder::class);
         // $this->call(PasajerosSeeder::class);
         // $this->call(ReservasSeeder::class);
         // $this->call(ContactoEmergenciaSeeder::class);
