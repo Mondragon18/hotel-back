@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
         DB::table('hoteles')->truncate();
         DB::table('habitacion')->truncate();
         DB::table('users')->truncate();
-        DB::table('pasajeros')->truncate();
-        DB::table('reservas')->truncate();
-        DB::table('contacto_emergencia')->truncate();
+        // DB::table('pasajeros')->truncate();
+        // DB::table('reservas')->truncate();
+        // DB::table('contacto_emergencia')->truncate();
 
         // Habilitar verificación de claves foráneas
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -33,8 +33,8 @@ class DatabaseSeeder extends Seeder
         $this->call(HotelSeeder::class);
         $this->call(HabitacionSeeder::class);
         $this->call(UserSeeder::class);
-        $this->call(PasajerosSeeder::class);
-        $this->call(ReservasSeeder::class);
-        $this->call(ContactoEmergenciaSeeder::class);
+        // $this->call(PasajerosSeeder::class);
+        // $this->call(ReservasSeeder::class);
+        // $this->call(ContactoEmergenciaSeeder::class);
     }
 }
