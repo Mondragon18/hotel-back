@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('habitacion', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('hotel_id');
-            $table->foreign('hotel_id')->references('id')->on('hoteles')->onDelete('cascade');
+            // $table->foreign('hotel_id')->references('id')->on('hoteles')->onDelete('cascade');
             $table->string('tipo');
             $table->integer('numero_persona');
             $table->string('descripcion');

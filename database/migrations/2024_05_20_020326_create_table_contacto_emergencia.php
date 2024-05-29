@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombres');
             $table->string('telefono');
             
-            $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
+            // $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
             $table->timestamps();
         });
     }

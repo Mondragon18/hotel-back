@@ -13,7 +13,7 @@ class PasajerosSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pasajero::factory()->count(5)->create();
+        Pasajero::factory()->count(5)->create();
     }
 
     
