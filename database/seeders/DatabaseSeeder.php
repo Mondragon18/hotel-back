@@ -31,8 +31,8 @@ class DatabaseSeeder extends Seeder
         // Ejecutar los seeders
         $this->call(UserSeeder::class);
         $this->call(ServiciosSeeder::class);
-        // $this->call(HotelSeeder::class);
-        // $this->call(HabitacionSeeder::class);
+        $this->call(HotelSeeder::class);
+        $this->call(HabitacionSeeder::class);
         // $this->call(PasajerosSeeder::class);
         // $this->call(ReservasSeeder::class);
         // $this->call(ContactoEmergenciaSeeder::class);
